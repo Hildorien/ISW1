@@ -13,14 +13,17 @@
 require_once '../clases.php';
 require_once '../CustomerBook.php';
 
-
 class IdiomTest extends PHPUnit_Framework_TestCase {
 	
     protected $customerBook;
     protected $stopwatch;
     protected $measureDurationOf; 
-    protected $checkIfDurationIsLowerThanXMilliseconds;
-    protected $measureDurationAndCheckIfIsLowerThanXMilliseconds;
+    protected $checkIfEventDurationIsLowerThanXMilliseconds;
+    protected $runInvalidEventAndFailIfExceptionIsNotThrown;
+    protected $validateExceptionName;
+    protected $validateExceptionMessage;
+    protected $validateThatCustomerBookHasNotChanged;
+    protected $tryInvalidEventAndVerifyExceptionAndCustomerBook;
 
     public function setUp(){
         $this->customerBook = new CustomerBook();
@@ -33,14 +36,36 @@ class IdiomTest extends PHPUnit_Framework_TestCase {
             return $durationInMilliseconds;
         };
         
-        $this->checkIfDurationIsLowerThanXMilliseconds = function ($durationInMilliseconds, $X) {
-            return $durationInMilliseconds < $X;
+        $this->checkIfEventDurationIsLowerThanXMilliseconds = function ($event, $X) {
+            $eventDurationInMilliseconds = ($this->measureDurationOf)($event); 
+            return $eventDurationInMilliseconds < $X;
         };
 
-        $this->measureDurationAndCheckIfIsLowerThanXMilliseconds = function ($event, $X) {
-            $durationInMilliseconds = ($this->measureDurationOf)($event);
-            $eventTookLessThanXMilliseconds = ($this->checkIfDurationIsLowerThanXMilliseconds)($durationInMilliseconds, $X);
-            return $eventTookLessThanXMilliseconds;
+        $this->runInvalidEventAndFailIfExceptionIsNotThrown = function ($invalidEvent) {
+            $invalidEvent();
+            $this->fail();
+        };
+
+        $this->validateExceptionName = function ($exception, $exceptionName) {
+            $this->assertEquals($exceptionName, get_class($exception));
+        };
+
+        $this->validateExceptionMessage = function ($exception, $exceptionMessage) {
+            $this->assertEquals($exception->getMessage(),$exceptionMessage);            
+        };
+
+        $this->validateThatCustomerBookHasNotChanged = function ($customerBookAssertion) {
+            $customerBookAssertion();
+        };
+
+        $this->tryInvalidEventAndVerifyExceptionAndCustomerBook = function ($invalidEvent, $exceptionName, $exceptionMessage, $customerBookAssertion) {
+            try {
+                ($this->runInvalidEventAndFailIfExceptionIsNotThrown)($invalidEvent);
+            } catch (Exception $exception) {
+                ($this->validateExceptionName)($exception, $exceptionName);
+                ($this->validateExceptionMessage)($exception, $exceptionMessage);
+                ($this->validateThatCustomerBookHasNotChanged)($customerBookAssertion);
+            }
         };
     }
     
@@ -48,7 +73,7 @@ class IdiomTest extends PHPUnit_Framework_TestCase {
 
         $addCustomerNamedJohnLennon = function() {$this->customerBook->addCustomerNamed('John Lennon');};
 
-        $addCustomerTookLessThan50Milliseconds = ($this->measureDurationAndCheckIfIsLowerThanXMilliseconds)($addCustomerNamedJohnLennon, 50);
+        $addCustomerTookLessThan50Milliseconds = ($this->checkIfEventDurationIsLowerThanXMilliseconds)($addCustomerNamedJohnLennon, 50);
         
         $this->assertTrue($addCustomerTookLessThan50Milliseconds);
     }
@@ -61,31 +86,27 @@ class IdiomTest extends PHPUnit_Framework_TestCase {
 
         $removeCustomerNamedPaulMcCartney = function() {$this->customerBook->removeCustomerNamed('Paul McCartney');};
         
-        $removeCustomerTookLessThan100Milliseconds = ($this->measureDurationAndCheckIfIsLowerThanXMilliseconds)($removeCustomerNamedPaulMcCartney, 100);
+        $removeCustomerTookLessThan100Milliseconds = ($this->checkIfEventDurationIsLowerThanXMilliseconds)($removeCustomerNamedPaulMcCartney, 100);
 
         $this->assertTrue($removeCustomerTookLessThan100Milliseconds);
     }
 	
     public function testCanNotAddACustomerWithEmptyName (){
 
-        try {
-            $this->customerBook->addCustomerNamed("");
-            $this->fail();
-        } catch (RuntimeException $exception) {
-            $this->assertEquals($exception->getMessage(),CustomerBook::CUSTOMER_NAME_EMPTY);
-            $this->assertTrue($this->customerBook->isEmpty());
-        }
+        $addCustomerWithEmptyName = function () {$this->customerBook->addCustomerNamed("");};
+        
+        $assertIfCustomerBookIsEmpty = function () {return $this->assertTrue($this->customerBook->isEmpty());};
+                
+        ($this->tryInvalidEventAndVerifyExceptionAndCustomerBook)($addCustomerWithEmptyName,'RuntimeException', CustomerBook::CUSTOMER_NAME_EMPTY, $assertIfCustomerBookIsEmpty);
     }
 
     public function testCanNotRemoveNotAddedCustomers (){
 
-        try {
-            $this->customerBook->removeCustomerNamed("John Lennon");
-            $this->fail();
-        } catch (InvalidArgumentException $exception) {
-            $this->assertEquals($exception->getMessage(),CustomerBook::INVALID_CUSTOMER_NAME);
-            $this->assertEquals(0,$this->customerBook->numberOfCustomers());
-        }
+        $removeNotAddedCustomer = function () {$this->customerBook->removeCustomerNamed("John Lennon");};
+        
+        $assertIfNumberOfCustomersIsZero = function () {$this->assertEquals(0,$this->customerBook->numberOfCustomers());};
+                
+        ($this->tryInvalidEventAndVerifyExceptionAndCustomerBook)($removeNotAddedCustomer,'InvalidArgumentException', CustomerBook::INVALID_CUSTOMER_NAME, $assertIfNumberOfCustomersIsZero);
     }
  
 }

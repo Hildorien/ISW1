@@ -13,7 +13,6 @@ class Stopwatch {
         $this->timeStop = round(microtime(true) * 1000);
         return $this->timeStop - $this->timeStart;
     }
-}    
-
+}
 
 ?>
