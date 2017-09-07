@@ -10,7 +10,7 @@
  *  
  */
 
-require_once '../clases.php';
+require_once '../Stopwatch.php';
 require_once '../CustomerBook.php';
 
 class IdiomTest extends PHPUnit_Framework_TestCase {
