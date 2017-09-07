@@ -13,6 +13,8 @@
 require_once '../Stopwatch.php';
 require_once '../CustomerBook.php';
 
+// REQUIERE PHP 7
+
 class IdiomTest extends PHPUnit_Framework_TestCase {
 	
     protected $customerBook;
