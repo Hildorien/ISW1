@@ -259,10 +259,20 @@ isOne
 	
 	^value = 1! !
 
+!Entero methodsFor: 'testing' stamp: 'MC 9/14/2017 01:11:55'!
+isOneIfTrue: trueBlock
+	
+	^value = 1 ifTrue: trueBlock ! !
+
 !Entero methodsFor: 'testing' stamp: 'HernanWilkinson 5/7/2016 20:12'!
 isZero
 	
 	^value = 0! !
+
+!Entero methodsFor: 'testing' stamp: 'MC 9/13/2017 23:43:58'!
+isZeroIfTrue: noneBlock
+	
+	^value = 0 ifTrue: noneBlock! !
 
 
 !Entero methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 21:01'!
@@ -465,19 +475,24 @@ numerator
 Fraccion class
 	instanceVariableNames: ''!
 
-!Fraccion class methodsFor: 'intance creation' stamp: 'HernanWilkinson 5/7/2016 20:41'!
+!Fraccion class methodsFor: 'intance creation' stamp: 'MC 9/14/2017 01:16:31'!
 with: aDividend over: aDivisor
 
 	| greatestCommonDivisor numerator denominator |
 	
-	aDivisor isZero ifTrue: [ self error: self canNotDivideByZeroErrorDescription ].
-	aDividend isZero ifTrue: [ ^aDividend ].
-	
+	"aDivisor isZero ifTrue: [ self error: self canNotDivideByZeroErrorDescription ].
+	aDividend isZero ifTrue: [ ^aDividend ]."
+
+	aDivisor isZeroIfTrue: [ self error: self canNotDivideByZeroErrorDescription ].
+	aDividend isZeroIfTrue: [ ^aDividend ].
+		
 	greatestCommonDivisor := aDividend greatestCommonDivisorWith: aDivisor. 
 	numerator := aDividend // greatestCommonDivisor.
 	denominator := aDivisor // greatestCommonDivisor.
 	
-	denominator isOne ifTrue: [ ^numerator ].
+	"denominator isOne ifTrue: [ ^numerator ]."
 
+	denominator isOneIfTrue: [ ^numerator ].
+	
 	^self new initializeWith: numerator over: denominator
 	! !
