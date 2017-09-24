@@ -421,10 +421,10 @@ manages: anAccount
 	^ self == anAccount or: ( accounts inject: false into: [ :isManaged :anAccountOrPortfolio | isManaged or: (anAccountOrPortfolio manages: anAccount ) ] ) 
 ! !
 
-!Portfolio methodsFor: 'testing' stamp: 'MC 9/23/2017 16:43:26'!
-registers: aTtransaction
+!Portfolio methodsFor: 'testing' stamp: 'MC 9/23/2017 23:06:31'!
+registers: aTransaction
 
-	^accounts inject: false into: [ :isIncluded :accountOrPortfolio | isIncluded or: (accountOrPortfolio registers: aTtransaction) ]! !
+	^ accounts inject: false into: [ :isIncluded :accountOrPortfolio | isIncluded or: (accountOrPortfolio registers: aTransaction) ]! !
 
 
 !Portfolio methodsFor: 'transactions' stamp: 'MC 9/23/2017 17:13:42'!
@@ -432,11 +432,10 @@ transactions
 
 	^ accounts inject: Array new into: [ :totalTransactions :anAccountOrProtfolio | totalTransactions union: anAccountOrProtfolio transactions ]! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'MC 9/23/2017 17:23:50'!
+!Portfolio methodsFor: 'transactions' stamp: 'MC 9/23/2017 23:02:48'!
 transactionsOf: anAccount 
 
-	^ accounts inject: Array new into: [ :anAccountTransactions :anAccountOrPortfolio | anAccountOrPortfolio = anAccount 
-		ifTrue: [ anAccountTransactions union: anAccountOrPortfolio transactions ] ]! !
+	( self manages: anAccount ) ifTrue: [ ^anAccount transactions ] ifFalse: [ ^ Array new ]! !
 
 
 !Portfolio methodsFor: 'initialization' stamp: 'MC 9/23/2017 16:24:39'!
