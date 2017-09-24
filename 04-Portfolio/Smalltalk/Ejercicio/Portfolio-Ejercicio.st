@@ -421,10 +421,10 @@ manages: anAccount
 	^ self == anAccount or: ( accounts inject: false into: [ :isManaged :anAccountOrPortfolio | isManaged or: (anAccountOrPortfolio manages: anAccount ) ] ) 
 ! !
 
-!Portfolio methodsFor: 'testing' stamp: 'MC 9/23/2017 23:06:31'!
+!Portfolio methodsFor: 'testing' stamp: 'MC 9/24/2017 17:22:13'!
 registers: aTransaction
 
-	^ accounts inject: false into: [ :isIncluded :accountOrPortfolio | isIncluded or: (accountOrPortfolio registers: aTransaction) ]! !
+	^ accounts inject: false into: [ :isRegistered :anAccountOrPortfolio | isRegistered or: (anAccountOrPortfolio registers: aTransaction) ]! !
 
 
 !Portfolio methodsFor: 'transactions' stamp: 'MC 9/23/2017 17:13:42'!
@@ -432,10 +432,10 @@ transactions
 
 	^ accounts inject: Array new into: [ :totalTransactions :anAccountOrProtfolio | totalTransactions union: anAccountOrProtfolio transactions ]! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'MC 9/23/2017 23:02:48'!
+!Portfolio methodsFor: 'transactions' stamp: 'MC 9/24/2017 17:14:23'!
 transactionsOf: anAccount 
 
-	( self manages: anAccount ) ifTrue: [ ^anAccount transactions ] ifFalse: [ ^ Array new ]! !
+	( self manages: anAccount ) ifTrue: [ ^anAccount transactions ] ifFalse: [ ^self error: self class accountNotManagedMessageDescription ]! !
 
 
 !Portfolio methodsFor: 'initialization' stamp: 'MC 9/23/2017 16:24:39'!
@@ -449,13 +449,27 @@ initializeWith: aCollectionOfAccounts
 Portfolio class
 	instanceVariableNames: ''!
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'MC 9/23/2017 16:27:45'!
-with: anAccount1 with: anAccount2
+!Portfolio class methodsFor: 'instance creation' stamp: 'pbs 9/24/2017 04:05:58'!
+accountAlreadyManagedErrorMessage 
+	
+	^ 'invalidPortfolio'! !
 
+!Portfolio class methodsFor: 'instance creation' stamp: 'pbs 9/24/2017 04:01:59'!
+accountNotManagedMessageDescription
+	
+	^ 'accountNotManaged'! !
+
+!Portfolio class methodsFor: 'instance creation' stamp: 'MC 9/24/2017 17:08:22'!
+with: anAccount1 with: anAccount2
+	
 	| aCollectionOfAccounts |
+	
+	( ( anAccount1 manages: anAccount2 ) or: ( anAccount2 manages: anAccount1 ) ) ifTrue: [^self error: self accountAlreadyManagedErrorMessage ] .
 	aCollectionOfAccounts := Set with: anAccount1 with: anAccount2 .
 	
-	^self new initializeWith: aCollectionOfAccounts .! !
+	^self new initializeWith: aCollectionOfAccounts .
+	
+	! !
 
 !Portfolio class methodsFor: 'instance creation' stamp: 'MC 9/23/2017 16:24:02'!
 withAll: aCollectionOfAccounts
@@ -502,8 +516,8 @@ manages: anAccount
 	^ self = anAccount 
 ! !
 
-!ReceptiveAccount methodsFor: 'testing' stamp: 'HernanWilkinson 7/13/2011 18:37'!
-registers: aTtransaction
+!ReceptiveAccount methodsFor: 'testing' stamp: 'MC 9/24/2017 17:25:04'!
+registers: aTransaction
 
-	^ transactions includes: aTtransaction 
+	^ transactions includes: aTransaction 
 ! !
