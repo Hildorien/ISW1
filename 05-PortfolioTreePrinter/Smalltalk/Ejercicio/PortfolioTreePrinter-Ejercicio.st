@@ -677,7 +677,6 @@ AccountTransaction subclass: #TransferWithdraw
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-
 !TransferWithdraw methodsFor: 'initialization' stamp: 'MC 9/26/2017 00:44:53'!
 for: aTransfer from: anAccount
 
@@ -691,7 +690,7 @@ value
 	^ transfer value! !
 
 
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'MC 9/28/2017 16:49:25'!
+!TransferWithdraw methodsFor: 'affect' stamp: 'MC 9/28/2017 16:49:25'!
 affect: aValue
 
 	aValue affectByTransferWithdraw: self! !
@@ -732,8 +731,7 @@ value
 	^ value ! !
 
 
-
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'MC 9/28/2017 16:48:41'!
+!Withdraw methodsFor: 'affect' stamp: 'MC 9/28/2017 16:48:41'!
 affect: aValue
 
 	aValue affectByWithdraw: self
