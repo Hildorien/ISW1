@@ -458,25 +458,34 @@ test29ReversePortfolioTreePrinterPrintsTheCompositeStartingFromTheLeaves
 	! !
 
 
-!PortfolioTest methodsFor: 'test support' stamp: 'MC 9/28/2017 00:28:31'!
-accountSummaryLinesOf: aReceptiveAccount 
+!PortfolioTest methodsFor: 'test support' stamp: 'MC 9/28/2017 17:42:04'!
+accountSummaryLinesOf: aReceptiveAccount
 	
-	^ ( Summary for: aReceptiveAccount ) lines! !
+	^ (TransactionsQuery
+		for: aReceptiveAccount
+		on: Summary initialize) value.! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'MC 9/28/2017 00:03:37'!
+!PortfolioTest methodsFor: 'test support' stamp: 'MC 9/28/2017 17:42:18'!
 accountTransferNetOf: aReceptiveAccount 
 	
-	^ ( TransferNet for: aReceptiveAccount ) value! !
+	^ ( TransactionsQuery 
+		for: aReceptiveAccount 
+		on: TransferNet initialize ) value .
+! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'MC 9/28/2017 00:11:22'!
-investmentEarningsOf: aReceptiveAccount 
-	
-	^ ( InvestmentEarnings for: aReceptiveAccount ) value! !
+!PortfolioTest methodsFor: 'test support' stamp: 'MC 9/28/2017 17:42:27'!
+investmentEarningsOf: aReceptiveAccount
 
-!PortfolioTest methodsFor: 'test support' stamp: 'MC 9/28/2017 00:12:24'!
-investmentNetOf: aReceptiveAccount 
-	
-	^ ( InvestmentNet for: aReceptiveAccount ) value! !
+	^ (TransactionsQuery
+		for: aReceptiveAccount
+		on: InvestmentEarnings initialize) value.! !
+
+!PortfolioTest methodsFor: 'test support' stamp: 'MC 9/28/2017 17:42:32'!
+investmentNetOf: aReceptiveAccount
+
+	^ (TransactionsQuery
+		for: aReceptiveAccount
+		on: InvestmentNet initialize) value.! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
 portofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
@@ -495,22 +504,6 @@ Object subclass: #AccountTransaction
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
-
-!AccountTransaction methodsFor: 'affect' stamp: 'MC 9/26/2017 18:27:38'!
-affectInvestmentEarnings: investmentEarnings
-
-	^ investmentEarnings! !
-
-!AccountTransaction methodsFor: 'affect' stamp: 'MC 9/26/2017 18:29:46'!
-affectInvestmentNet: invesmentNet
-
-	^ invesmentNet 	! !
-
-!AccountTransaction methodsFor: 'affect' stamp: 'MC 9/26/2017 18:50:56'!
-affectTransferNet: transferNet
-
-	^ transferNet 	! !
-
 
 !AccountTransaction methodsFor: 'evaluating' stamp: 'HernanWilkinson 7/14/2011 06:48'!
 value
@@ -550,26 +543,26 @@ register: aValue during: aNumberOfDays at: aTna on: aReceptiveAccount
 	account := aReceptiveAccount .! !
 
 
-!CertificateOfDeposit methodsFor: 'format' stamp: 'MC 9/26/2017 18:42:41'!
-asMessage
+!CertificateOfDeposit methodsFor: 'affect' stamp: 'MC 9/28/2017 16:51:41'!
+affect: aValue
 
-	^ 'Plazo fijo por ' , value printString , ' durante ' , numberOfDays printString , ' dias a una tna de ' , ( 100 * tna ) printString , '%'! !
+	aValue affectByCertificateOfDeposit: self! !
 
 
-!CertificateOfDeposit methodsFor: 'affect' stamp: 'MC 9/25/2017 21:12:17'!
-affectBalance: aBalance
+!CertificateOfDeposit methodsFor: 'evaluating' stamp: 'MC 9/28/2017 16:36:30'!
+numberOfDays
 
-	^ aBalance - value! !
+	^ numberOfDays ! !
 
-!CertificateOfDeposit methodsFor: 'affect' stamp: 'MC 9/26/2017 18:38:05'!
-affectInvestmentEarnings: investmentEarnings
+!CertificateOfDeposit methodsFor: 'evaluating' stamp: 'MC 9/28/2017 16:36:09'!
+tna
 
-	^ investmentEarnings + ( value * (tna/360) * numberOfDays )! !
+	^ tna! !
 
-!CertificateOfDeposit methodsFor: 'affect' stamp: 'MC 9/26/2017 18:21:18'!
-affectInvestmentNet: anInvestmentNet
+!CertificateOfDeposit methodsFor: 'evaluating' stamp: 'MC 9/28/2017 16:32:40'!
+value
 
-	^ anInvestmentNet + value! !
+	^ value! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -601,22 +594,16 @@ initializeFor: aValue
 	value := aValue ! !
 
 
-!Deposit methodsFor: 'affect' stamp: 'MC 9/25/2017 21:10:33'!
-affectBalance: aBalance
+!Deposit methodsFor: 'affect' stamp: 'MC 9/28/2017 16:50:23'!
+affect: aValue
 
-	^ aBalance + value! !
+	aValue affectByDeposit: self! !
 
 
 !Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
 value
 
 	^ value! !
-
-
-!Deposit methodsFor: 'format' stamp: 'MC 9/26/2017 18:03:18'!
-asMessage
-
-	^ 'Deposito por ', value printString ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -660,21 +647,10 @@ value
 	^ transfer value! !
 
 
-!TransferDeposit methodsFor: 'affect' stamp: 'MC 9/26/2017 00:49:53'!
-affectBalance: aBalance
+!TransferDeposit methodsFor: 'affect' stamp: 'MC 9/28/2017 16:49:49'!
+affect: aValue
 
-	^ aBalance + transfer value! !
-
-!TransferDeposit methodsFor: 'affect' stamp: 'MC 9/26/2017 18:52:23'!
-affectTransferNet: transferNet
-
-	^ transferNet + transfer value! !
-
-
-!TransferDeposit methodsFor: 'format' stamp: 'MC 9/26/2017 17:34:13'!
-asMessage
-
-	^ 'Transferencia por ', transfer value printString ! !
+	aValue affectByTransferDeposit: self! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -701,12 +677,6 @@ AccountTransaction subclass: #TransferWithdraw
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!TransferWithdraw methodsFor: 'balance' stamp: 'MC 9/26/2017 00:52:35'!
-affectBalance: aBalance
-
-	^ aBalance - transfer value
-	! !
-
 
 !TransferWithdraw methodsFor: 'initialization' stamp: 'MC 9/26/2017 00:44:53'!
 for: aTransfer from: anAccount
@@ -721,15 +691,10 @@ value
 	^ transfer value! !
 
 
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'MC 9/26/2017 18:52:15'!
-affectTransferNet: transferNet
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'MC 9/28/2017 16:49:25'!
+affect: aValue
 
-	^ transferNet - transfer value! !
-
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'MC 9/26/2017 17:34:23'!
-asMessage
-
-	^ 'Transferencia por -', transfer value printString ! !
+	aValue affectByTransferWithdraw: self! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -767,16 +732,13 @@ value
 	^ value ! !
 
 
-!Withdraw methodsFor: 'balance' stamp: 'MC 9/25/2017 21:11:43'!
-affectBalance: aBalance
 
-	^ aBalance - value! !
+!Withdraw methodsFor: 'as yet unclassified' stamp: 'MC 9/28/2017 16:48:41'!
+affect: aValue
 
+	aValue affectByWithdraw: self
 
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'MC 9/26/2017 17:34:33'!
-asMessage
-
-	^ 'Extraccion por ', value printString ! !
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -800,23 +762,112 @@ register: aValue on: account
 	^ withdraw! !
 
 
-!classDefinition: #InvestmentEarnings category: #'PortfolioTreePrinter-Ejercicio'!
-Object subclass: #InvestmentEarnings
-	instanceVariableNames: 'receptiveAccount'
+!classDefinition: #Balance category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #Balance
+	instanceVariableNames: 'value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!InvestmentEarnings methodsFor: 'initialization' stamp: 'MC 9/28/2017 00:09:22'!
-for: aReceptiveAccount
+!Balance methodsFor: 'initialization' stamp: 'MC 9/28/2017 17:32:14'!
+initialize
 
-	receptiveAccount := aReceptiveAccount ! !
+	value := 0! !
 
 
-!InvestmentEarnings methodsFor: 'value' stamp: 'MC 9/28/2017 00:10:02'!
+!Balance methodsFor: 'value' stamp: 'MC 9/28/2017 17:32:14'!
 value
 
-	^ receptiveAccount transactions inject: 0 into: [ :investmentEarnings :transaction | transaction affectInvestmentEarnings: investmentEarnings ]! !
+	^ value! !
+
+
+!Balance methodsFor: 'affect' stamp: 'MC 9/28/2017 17:33:21'!
+affectByCertificateOfDeposit: aCertificateOfDeposit
+	
+	value := value - aCertificateOfDeposit value
+! !
+
+!Balance methodsFor: 'affect' stamp: 'MC 9/28/2017 17:33:50'!
+affectByDeposit: aDeposit
+	
+	value := value + aDeposit value
+
+	! !
+
+!Balance methodsFor: 'affect' stamp: 'MC 9/28/2017 17:34:18'!
+affectByTransferDeposit: aTransferDeposit
+	
+	value := value + aTransferDeposit value
+! !
+
+!Balance methodsFor: 'affect' stamp: 'MC 9/28/2017 17:34:35'!
+affectByTransferWithdraw: aTransferWithdraw
+	
+	value := value - aTransferWithdraw value! !
+
+!Balance methodsFor: 'affect' stamp: 'MC 9/28/2017 17:34:58'!
+affectByWithdraw: aWithdraw
+	
+	value := value - aWithdraw value! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Balance class' category: #'PortfolioTreePrinter-Ejercicio'!
+Balance class
+	instanceVariableNames: ''!
+
+!Balance class methodsFor: 'instance creation' stamp: 'MC 9/28/2017 17:32:14'!
+initialize
+
+	^ self new initialize ! !
+
+
+!classDefinition: #InvestmentEarnings category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #InvestmentEarnings
+	instanceVariableNames: 'value'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!InvestmentEarnings methodsFor: 'initialization' stamp: 'MC 9/28/2017 17:06:39'!
+initialize
+
+	value := 0! !
+
+
+!InvestmentEarnings methodsFor: 'value' stamp: 'MC 9/28/2017 16:36:59'!
+value
+
+	^ value! !
+
+
+!InvestmentEarnings methodsFor: 'affect' stamp: 'MC 9/28/2017 16:35:01'!
+affectByCertificateOfDeposit: aCertificateOfDeposit
+	
+	value := value + ( aCertificateOfDeposit value * ( aCertificateOfDeposit tna/360) * aCertificateOfDeposit numberOfDays )
+! !
+
+!InvestmentEarnings methodsFor: 'affect' stamp: 'MC 9/28/2017 16:33:45'!
+affectByDeposit: aDeposit
+	
+	"do nothing"
+	! !
+
+!InvestmentEarnings methodsFor: 'affect' stamp: 'MC 9/28/2017 16:33:45'!
+affectByTransferDeposit: aTransferDeposit
+	
+	"do nothing"! !
+
+!InvestmentEarnings methodsFor: 'affect' stamp: 'MC 9/28/2017 16:33:45'!
+affectByTransferWithdraw: aTransferWithdraw
+	
+	"do nothing"! !
+
+!InvestmentEarnings methodsFor: 'affect' stamp: 'MC 9/28/2017 16:33:45'!
+affectByWithdraw: aWithdraw
+	
+	"do nothing"
+! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -824,29 +875,58 @@ value
 InvestmentEarnings class
 	instanceVariableNames: ''!
 
-!InvestmentEarnings class methodsFor: 'instance creation' stamp: 'MC 9/28/2017 00:09:22'!
-for: aReceptiveAccount
+!InvestmentEarnings class methodsFor: 'instance creation' stamp: 'MC 9/28/2017 17:06:57'!
+initialize
 
-	^ self new for: aReceptiveAccount ! !
+	^ self new initialize ! !
 
 
 !classDefinition: #InvestmentNet category: #'PortfolioTreePrinter-Ejercicio'!
 Object subclass: #InvestmentNet
-	instanceVariableNames: 'receptiveAccount'
+	instanceVariableNames: 'value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!InvestmentNet methodsFor: 'initialization' stamp: 'MC 9/28/2017 00:08:09'!
-for: aReceptiveAccount
+!InvestmentNet methodsFor: 'initialization' stamp: 'MC 9/28/2017 17:07:33'!
+initialize
 
-	receptiveAccount := aReceptiveAccount ! !
+	value := 0! !
 
 
-!InvestmentNet methodsFor: 'value' stamp: 'MC 9/28/2017 00:08:50'!
+!InvestmentNet methodsFor: 'value' stamp: 'MC 9/28/2017 17:09:35'!
 value
 
-	^ receptiveAccount transactions inject: 0 into: [ :investmentNet :transaction | transaction affectInvestmentNet: investmentNet ]! !
+	^ value! !
+
+
+!InvestmentNet methodsFor: 'affect' stamp: 'MC 9/28/2017 16:32:59'!
+affectByCertificateOfDeposit: aCertificateOfDeposit
+	
+	value := value + aCertificateOfDeposit value
+! !
+
+!InvestmentNet methodsFor: 'affect' stamp: 'MC 9/28/2017 16:29:45'!
+affectByDeposit: aDeposit
+	
+	"do nothing"
+	! !
+
+!InvestmentNet methodsFor: 'affect' stamp: 'MC 9/28/2017 16:31:38'!
+affectByTransferDeposit: aTransferDeposit
+	
+	"do nothing"! !
+
+!InvestmentNet methodsFor: 'affect' stamp: 'MC 9/28/2017 16:31:24'!
+affectByTransferWithdraw: aTransferWithdraw
+	
+	"do nothing"! !
+
+!InvestmentNet methodsFor: 'affect' stamp: 'MC 9/28/2017 16:29:45'!
+affectByWithdraw: aWithdraw
+	
+	"do nothing"
+! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -854,10 +934,10 @@ value
 InvestmentNet class
 	instanceVariableNames: ''!
 
-!InvestmentNet class methodsFor: 'instance creation' stamp: 'MC 9/28/2017 00:08:09'!
-for: aReceptiveAccount
+!InvestmentNet class methodsFor: 'instance creation' stamp: 'MC 9/28/2017 17:07:15'!
+initialize
 
-	^ self new for: aReceptiveAccount ! !
+	^ self new initialize ! !
 
 
 !classDefinition: #SummarizingAccount category: #'PortfolioTreePrinter-Ejercicio'!
@@ -1009,10 +1089,15 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'MC 9/25/2017 21:14:34'!
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'MC 9/28/2017 17:39:38'!
 balance
 	
-	^ transactions inject: 0 into: [ :balance :transaction | transaction affectBalance: balance ]
+	| balance |
+
+	balance := Balance initialize .
+	transactions do: [ :transaction | transaction affect: balance ] .
+	^ balance value . 
+
 ! !
 
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
@@ -1042,22 +1127,48 @@ registers: aTtransaction
 
 !classDefinition: #Summary category: #'PortfolioTreePrinter-Ejercicio'!
 Object subclass: #Summary
-	instanceVariableNames: 'receptiveAccount'
+	instanceVariableNames: 'lines'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!Summary methodsFor: 'initialization' stamp: 'MC 9/28/2017 00:14:19'!
-for: aReceptiveAccount
+!Summary methodsFor: 'initialization' stamp: 'MC 9/28/2017 17:22:52'!
+initialize
 
-	receptiveAccount := aReceptiveAccount ! !
+	lines := OrderedCollection new! !
 
 
-!Summary methodsFor: 'lines' stamp: 'MC 9/28/2017 00:29:31'!
-lines
+!Summary methodsFor: 'value' stamp: 'MC 9/28/2017 17:25:35'!
+value
 
-	^ receptiveAccount transactions inject: OrderedCollection new into: [ :summary :aTransaction | summary add: aTransaction asMessage . summary ] 
+	^ lines! !
+
+
+!Summary methodsFor: 'affect' stamp: 'MC 9/28/2017 17:18:59'!
+affectByCertificateOfDeposit: aCertificateOfDeposit
+	
+	lines add: ( 'Plazo fijo por ' , aCertificateOfDeposit value printString , ' durante ' , aCertificateOfDeposit numberOfDays printString , ' dias a una tna de ' , ( 100 * aCertificateOfDeposit tna ) printString , '%' )! !
+
+!Summary methodsFor: 'affect' stamp: 'MC 9/28/2017 17:19:37'!
+affectByDeposit: aDeposit
+	
+	lines add: ( 'Deposito por ', aDeposit value printString )	! !
+
+!Summary methodsFor: 'affect' stamp: 'MC 9/28/2017 17:20:39'!
+affectByTransferDeposit: aTransferDeposit
+	
+	lines add: ( 'Transferencia por ', aTransferDeposit value printString )! !
+
+!Summary methodsFor: 'affect' stamp: 'MC 9/28/2017 17:21:40'!
+affectByTransferWithdraw: aTransferWithdraw
+	
+	lines add: ( 'Transferencia por -', aTransferWithdraw value printString )
 ! !
+
+!Summary methodsFor: 'affect' stamp: 'MC 9/28/2017 17:17:19'!
+affectByWithdraw: aWithdraw
+	
+	lines add: ('Extraccion por ', aWithdraw value printString) ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1065,10 +1176,42 @@ lines
 Summary class
 	instanceVariableNames: ''!
 
-!Summary class methodsFor: 'instance creation' stamp: 'MC 9/28/2017 00:14:19'!
-for: aReceptiveAccount
+!Summary class methodsFor: 'instance creation' stamp: 'MC 9/28/2017 17:12:38'!
+initialize
 
-	^ self new for: aReceptiveAccount ! !
+	^ self new initialize ! !
+
+
+!classDefinition: #TransactionsQuery category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #TransactionsQuery
+	instanceVariableNames: 'receptiveAccount targetValue'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!TransactionsQuery methodsFor: 'initialization' stamp: 'MC 9/28/2017 16:46:49'!
+for: aReceptiveAccount on: aTargetValue
+
+	receptiveAccount := aReceptiveAccount .
+	targetValue := aTargetValue ! !
+
+
+!TransactionsQuery methodsFor: 'value' stamp: 'MC 9/28/2017 17:31:22'!
+value
+
+	receptiveAccount transactions do: [ :transaction | transaction affect: targetValue ] .
+	^ targetValue value! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TransactionsQuery class' category: #'PortfolioTreePrinter-Ejercicio'!
+TransactionsQuery class
+	instanceVariableNames: ''!
+
+!TransactionsQuery class methodsFor: 'instance creation' stamp: 'MC 9/28/2017 16:53:22'!
+for: aReceptiveAccount on: aTargetValue
+
+	^ self new for: aReceptiveAccount on: aTargetValue ! !
 
 
 !classDefinition: #Transfer category: #'PortfolioTreePrinter-Ejercicio'!
@@ -1108,21 +1251,50 @@ register: aValue from: aFromAccount to: aToAccount
 
 !classDefinition: #TransferNet category: #'PortfolioTreePrinter-Ejercicio'!
 Object subclass: #TransferNet
-	instanceVariableNames: 'receptiveAccount'
+	instanceVariableNames: 'value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!TransferNet methodsFor: 'initialization' stamp: 'MC 9/27/2017 23:46:41'!
-for: aReceptiveAccount
+!TransferNet methodsFor: 'initialization' stamp: 'MC 9/28/2017 17:00:13'!
+initialize
 
-	receptiveAccount := aReceptiveAccount ! !
+	value := 0! !
 
 
-!TransferNet methodsFor: 'value' stamp: 'MC 9/27/2017 23:48:35'!
+!TransferNet methodsFor: 'value' stamp: 'MC 9/28/2017 16:58:58'!
 value
 
-	^ receptiveAccount transactions inject: 0 into: [ :transferNet :transaction | transaction affectTransferNet: transferNet ]! !
+	^ value! !
+
+
+!TransferNet methodsFor: 'affect' stamp: 'MC 9/28/2017 16:25:39'!
+affectByCertificateOfDeposit: aCertificateOfDeposit
+	
+	"do nothing"
+! !
+
+!TransferNet methodsFor: 'affect' stamp: 'MC 9/28/2017 16:23:42'!
+affectByDeposit: aDeposit
+	
+	"do nothing"
+	! !
+
+!TransferNet methodsFor: 'affect' stamp: 'MC 9/28/2017 16:26:49'!
+affectByTransferDeposit: aTransferDeposit
+	
+	value := value + aTransferDeposit value! !
+
+!TransferNet methodsFor: 'affect' stamp: 'MC 9/28/2017 16:28:31'!
+affectByTransferWithdraw: aTransferWithdraw
+	
+	value := value - aTransferWithdraw value! !
+
+!TransferNet methodsFor: 'affect' stamp: 'MC 9/28/2017 16:24:11'!
+affectByWithdraw: aWithdraw
+	
+	"do nothing"
+! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1130,7 +1302,13 @@ value
 TransferNet class
 	instanceVariableNames: ''!
 
-!TransferNet class methodsFor: 'instance creation' stamp: 'MC 9/27/2017 23:45:33'!
-for: aReceptiveAccount
+!TransferNet class methodsFor: 'instance creation' stamp: 'MC 9/28/2017 16:59:55'!
+initialize
 
-	^ self new for: aReceptiveAccount ! !
+	^ self new initialize ! !
+
+Balance initialize!
+InvestmentEarnings initialize!
+InvestmentNet initialize!
+Summary initialize!
+TransferNet initialize!
