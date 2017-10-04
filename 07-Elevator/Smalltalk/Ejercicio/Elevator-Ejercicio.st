@@ -439,3 +439,126 @@ Object subclass: #ElevatorController
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Elevator-Ejercicio'!
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 19:44:55'!
+cabinDoorClosed
+
+	cabinDoorState := 'closed' .
+	cabinState := 'moving' .! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 20:57:18'!
+cabinDoorOpened
+
+	cabinDoorState := 'opened' .
+	( floorsToGo isEmpty ) ifTrue: [ state := 'idle' ] .! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 19:07:55'!
+cabinFloorNumber
+
+	^ cabinFloorNumber ! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 21:45:50'!
+cabinOnFloor: floorNumber
+	
+	( floorsToGo includes: floorNumber ) ifFalse: [ ^ ElevatorEmergency new: 'Sensor de cabina desincronizado' ] .
+	cabinFloorNumber := floorNumber .
+	cabinState := 'stopped' .
+	cabinDoorState := 'opening' .
+	floorsToGo remove: floorNumber . 
+	
+	! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 21:31:13'!
+closeCabinDoor
+
+	( self isIdle or: self isCabinMoving or: self isCabinDoorOpening ) ifFalse: [ cabinDoorState := 'closing' ]! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 20:58:00'!
+goUpPushedFromFloor: floorNumber
+
+	state := 'working' .
+	"cabinState := 'stopped' ."
+	cabinDoorState := 'closing' .
+	floorsToGo add: floorNumber .! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 19:21:46'!
+isCabinDoorClosed
+
+	^ cabinDoorState = 'closed'! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 19:17:59'!
+isCabinDoorClosing
+
+	^ cabinDoorState = 'closing'! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 19:08:22'!
+isCabinDoorOpened
+
+	^ cabinDoorState = 'opened'! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 19:17:12'!
+isCabinDoorOpening
+
+	^ cabinDoorState = 'opening'! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 19:14:56'!
+isCabinMoving
+
+	^ cabinState = 'moving'! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 19:08:35'!
+isCabinStopped
+
+	^ cabinState = 'stopped'! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 21:21:15'!
+isCabinWaitingForPeople
+	
+	^ self isCabinDoorOpened ! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 19:09:41'!
+isIdle
+
+	^ state = 'idle'! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 19:20:10'!
+isWorking
+
+	^ state = 'working'! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 19:55:45'!
+openCabinDoor
+
+	( ( cabinState ~= 'moving' ) and: ( cabinDoorState ~= 'opened' ) ) ifTrue: [ cabinDoorState := 'opening' ] ! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/2/2017 21:18:11'!
+waitForPeopleTimedOut
+
+	cabinDoorState := 'closing' .
+	! !
+
+
+!ElevatorController methodsFor: 'initialization' stamp: 'MC 10/2/2017 19:07:32'!
+initialize
+
+	"state cabinState cabinDoorState cabinFloorNumber floorsToGo"
+	
+	state := 'idle' .
+	cabinState := 'stopped' .
+	cabinDoorState := 'opened' .
+	cabinFloorNumber := 0 .
+	floorsToGo := OrderedCollection new .
+	
+
+	! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ElevatorController class' category: #'Elevator-Ejercicio'!
+ElevatorController class
+	instanceVariableNames: ''!
+
+!ElevatorController class methodsFor: 'instance creation' stamp: 'MC 10/2/2017 19:03:30'!
+new
+
+	^ super new initialize! !
