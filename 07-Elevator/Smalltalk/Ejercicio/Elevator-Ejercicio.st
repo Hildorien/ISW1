@@ -493,15 +493,25 @@ isStopped
 
 	^ state isStopped ! !
 
-!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:59:39'!
+!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 00:52:54'!
 openedDoor
 
 	door open! !
 
-!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:55:32'!
+!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 01:01:11'!
+openedDoorIfPosible
+
+	state openedDoorIfPosible: self! !
+
+!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 00:54:14'!
 openingDoor
 
 	door open! !
+
+!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 00:53:16'!
+openingDoorIfPosible
+
+	state openingDoorIfPosible: self! !
 
 !Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:47:00'!
 stop
@@ -562,6 +572,16 @@ isMoving
 
 	^ true! !
 
+!Moving methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 01:00:29'!
+openedDoorIfPosible: aCabin 
+	
+	"do nothing"! !
+
+!Moving methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 01:00:53'!
+openingDoorIfPosible: aCabin 
+	
+	"do nothing"! !
+
 !Moving methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:45:49'!
 stopTransition
 	
@@ -584,6 +604,16 @@ isStopped
 moveTransition
 
 	^ Moving new! !
+
+!Stopped methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 01:02:47'!
+openedDoorIfPosible: aCabin 
+
+	aCabin openedDoor! !
+
+!Stopped methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 00:50:24'!
+openingDoorIfPosible: aCabin 
+
+	aCabin openingDoor! !
 
 
 !classDefinition: #Door category: #'Elevator-Ejercicio'!
@@ -772,10 +802,10 @@ cabinDoorClosed
 
 	cabin closedDoor ! !
 
-!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:55:07'!
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 00:56:09'!
 cabinDoorOpened
 
-	cabin openingDoor .
+	cabin openedDoorIfPosible .
 	state := state idleTransition .
 	! !
 
@@ -850,10 +880,11 @@ isWorking
 	
 	^ state isWorking! !
 
-!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:59:18'!
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 00:55:12'!
 openCabinDoor
 
-	cabin openedDoor! !
+	cabin openingDoorIfPosible 
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
