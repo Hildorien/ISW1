@@ -445,16 +445,21 @@ changeFloorNumber
 
 	floorNumber := floorNumber + 1! !
 
-!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:26:36'!
+!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:12:55'!
 closedDoor
 
 	door close .
-	state := state moveTransition .! !
+	state := state transitionToMoving.! !
 
-!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:25:32'!
+!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:03:05'!
 closingDoor
 
-	door close! !
+	door closing! !
+
+!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 13:43:23'!
+closingDoorIfStopped
+
+	state clossingDoorIfStopped: self! !
 
 !Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 18:43:14'!
 floorNumber
@@ -493,31 +498,31 @@ isStopped
 
 	^ state isStopped ! !
 
-!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 00:52:54'!
+!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 11:50:36'!
 openedDoor
 
-	door open! !
+	door opened! !
 
-!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 01:01:11'!
-openedDoorIfPosible
+!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 14:28:35'!
+openedDoorIfStopped
 
-	state openedDoorIfPosible: self! !
+	state openedDoorIfStopped: self! !
 
-!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 00:54:14'!
+!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 11:52:03'!
 openingDoor
 
-	door open! !
+	door opening! !
 
-!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 00:53:16'!
-openingDoorIfPosible
+!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 14:28:57'!
+openingDoorIfStopped
 
-	state openingDoorIfPosible: self! !
+	state openingDoorIfStopped: self! !
 
-!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:47:00'!
+!Cabin methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:14:27'!
 stop
 
-	state := state stopTransition .
-	door open .! !
+	state := state transitionToStopped .
+	door opening .! !
 
 
 !Cabin methodsFor: 'copying' stamp: 'MC 10/11/2017 18:54:44'!
@@ -554,11 +559,6 @@ isStopped
 	
 	^ false! !
 
-!CabinState methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:05:00'!
-moveTransition
-
-	self subclassResponsibility ! !
-
 
 !classDefinition: #Moving category: #'Elevator-Ejercicio'!
 CabinState subclass: #Moving
@@ -567,24 +567,34 @@ CabinState subclass: #Moving
 	poolDictionaries: ''
 	category: 'Elevator-Ejercicio'!
 
+!Moving methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 13:43:46'!
+clossingDoorIfStopped: aCabin 
+
+	"do nothing"! !
+
 !Moving methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 19:41:09'!
 isMoving
 
 	^ true! !
 
-!Moving methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 01:00:29'!
-openedDoorIfPosible: aCabin 
+!Moving methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 14:10:43'!
+openedDoorIfStopped: aCabin 
 	
 	"do nothing"! !
 
-!Moving methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 01:00:53'!
-openingDoorIfPosible: aCabin 
+!Moving methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 14:10:59'!
+openingDoorIfStopped: aCabin 
 	
 	"do nothing"! !
 
-!Moving methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:45:49'!
-stopTransition
+!Moving methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 17:08:45'!
+transitionToMoving
 	
+	^ self! !
+
+!Moving methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:15:07'!
+transitionToStopped
+
 	^ Stopped new! !
 
 
@@ -595,25 +605,30 @@ CabinState subclass: #Stopped
 	poolDictionaries: ''
 	category: 'Elevator-Ejercicio'!
 
+!Stopped methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 13:49:14'!
+clossingDoorIfStopped: aCabin 
+
+	aCabin closingDoor ! !
+
 !Stopped methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 19:40:23'!
 isStopped
 
 	^ true! !
 
-!Stopped methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:05:33'!
-moveTransition
-
-	^ Moving new! !
-
-!Stopped methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 01:02:47'!
-openedDoorIfPosible: aCabin 
+!Stopped methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 14:09:54'!
+openedDoorIfStopped: aCabin 
 
 	aCabin openedDoor! !
 
-!Stopped methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 00:50:24'!
-openingDoorIfPosible: aCabin 
+!Stopped methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 14:10:11'!
+openingDoorIfStopped: aCabin 
 
 	aCabin openingDoor! !
+
+!Stopped methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:14:00'!
+transitionToMoving
+
+	^ Moving new! !
 
 
 !classDefinition: #Door category: #'Elevator-Ejercicio'!
@@ -623,10 +638,15 @@ Object subclass: #Door
 	poolDictionaries: ''
 	category: 'Elevator-Ejercicio'!
 
-!Door methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 19:54:27'!
+!Door methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:11:49'!
 close
 
-	state := state closeTransition ! !
+	state := state transitionToClosed! !
+
+!Door methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:03:45'!
+closing
+
+	state := state transitionToClosing! !
 
 !Door methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 19:20:04'!
 initialize
@@ -653,10 +673,15 @@ isOpening
 
 	^ state isOpening ! !
 
-!Door methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:47:49'!
-open
+!Door methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:04:37'!
+opened
 
-	state := state openTransition ! !
+	state := state transitionToOpened! !
+
+!Door methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:15:31'!
+opening
+
+	state := state transitionToOpening! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -707,6 +732,17 @@ openTransition
 
 	self subclassResponsibility! !
 
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'DoorState class' category: #'Elevator-Ejercicio'!
+DoorState class
+	instanceVariableNames: ''!
+
+!DoorState class methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 17:07:33'!
+desynchronizedDoorSensorErrorDescription
+
+	^ 'Sensor de puerta desincronizado' ! !
+
 
 !classDefinition: #Closed category: #'Elevator-Ejercicio'!
 DoorState subclass: #Closed
@@ -720,8 +756,18 @@ isClosed
 
 	^ true! !
 
-!Closed methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:48:23'!
-openTransition
+!Closed methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 17:11:36'!
+transitionToClosed
+	
+	^ ElevatorEmergency new signal: self class desynchronizedDoorSensorErrorDescription! !
+
+!Closed methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 17:14:13'!
+transitionToClosing
+
+	^ self! !
+
+!Closed methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:15:51'!
+transitionToOpening
 
 	^ Opening new! !
 
@@ -733,18 +779,23 @@ DoorState subclass: #Closing
 	poolDictionaries: ''
 	category: 'Elevator-Ejercicio'!
 
-!Closing methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:00:31'!
-closeTransition
-
-	^ Closed new ! !
-
 !Closing methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 19:41:30'!
 isClosing
 
 	^ true! !
 
-!Closing methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 21:03:12'!
-openTransition
+!Closing methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:12:37'!
+transitionToClosed
+
+	^ Closed new! !
+
+!Closing methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:05:03'!
+transitionToOpened
+
+	^ Opened new! !
+
+!Closing methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:18:03'!
+transitionToOpening
 
 	^ Opening new! !
 
@@ -756,18 +807,28 @@ DoorState subclass: #Opened
 	poolDictionaries: ''
 	category: 'Elevator-Ejercicio'!
 
-!Opened methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 19:24:50'!
-closeTransition
-
-	^ Closing new! !
-
 !Opened methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 19:40:55'!
 isOpened
 
 	^ true! !
 
-!Opened methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 21:01:17'!
-openTransition
+!Opened methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 17:04:56'!
+transitionToClosed
+
+	^ ElevatorEmergency new signal: self class desynchronizedDoorSensorErrorDescription! !
+
+!Opened methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:06:34'!
+transitionToClosing
+
+	^ Closing new! !
+
+!Opened methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:18:49'!
+transitionToOpened
+
+	^ self! !
+
+!Opened methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:16:51'!
+transitionToOpening
 
 	^ self! !
 
@@ -784,10 +845,25 @@ isOpening
 
 	^ true! !
 
-!Opening methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:56:33'!
-openTransition
-	
+!Opening methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 17:12:38'!
+transitionToClosed
+
+	^ ElevatorEmergency new signal: self class desynchronizedDoorSensorErrorDescription! !
+
+!Opening methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 16:41:32'!
+transitionToClosing
+
+	^ self! !
+
+!Opening methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:07:05'!
+transitionToOpened
+
 	^ Opened new! !
+
+!Opening methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:20:00'!
+transitionToOpening
+
+	^ self! !
 
 
 !classDefinition: #ElevatorController category: #'Elevator-Ejercicio'!
@@ -802,11 +878,11 @@ cabinDoorClosed
 
 	cabin closedDoor ! !
 
-!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 00:56:09'!
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 14:29:32'!
 cabinDoorOpened
 
-	cabin openedDoorIfPosible .
-	state := state idleTransition .
+	cabin openedDoorIfStopped .
+	( floorsToGo size = 1 ) ifTrue: [ state := state transitionToIdle ] .
 	! !
 
 !ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 18:42:49'!
@@ -814,20 +890,32 @@ cabinFloorNumber
 
 	^ cabin floorNumber! !
 
-!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:51:09'!
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 17:01:16'!
 cabinOnFloor: aFloorNumber
 
+	( cabin floorNumber + 1 = aFloorNumber ) ifFalse: [ ^ ElevatorEmergency new signal: self class desynchronizedCabinSensorErrorDescription ] .
 	( floorsToGo includes: aFloorNumber ) ifTrue: [ cabin stop ] .
 	cabin changeFloorNumber .	 
 	 
 
 	! !
 
-!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:24:55'!
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 16:43:44'!
+closeCabinDoor
+
+	state closingDoorIfWorkingAndCabinStopped: self
+	! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 14:09:06'!
+closingCabinDoor
+
+	cabin closingDoorIfStopped! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:02:15'!
 goUpPushedFromFloor: aFloorNumber 
 
 	floorsToGo add: aFloorNumber .
-	state := state workTransition .
+	state := state transitionToWorking .
 	cabin closingDoor .
 ! !
 
@@ -870,6 +958,11 @@ isCabinStopped
 
 	^ cabin isStopped! !
 
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 14:42:54'!
+isCabinWaitingForPeople
+
+	^ self isCabinDoorOpened and: ( floorsToGo isEmpty not )! !
+
 !ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 19:30:05'!
 isIdle
 
@@ -880,17 +973,28 @@ isWorking
 	
 	^ state isWorking! !
 
-!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 00:55:12'!
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 14:29:52'!
 openCabinDoor
 
-	cabin openingDoorIfPosible 
+	cabin openingDoorIfStopped
 	! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 13:33:34'!
+waitForPeopleTimedOut
+
+	cabin closingDoor .
+	state := state transitionToWorking .! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'ElevatorController class' category: #'Elevator-Ejercicio'!
 ElevatorController class
 	instanceVariableNames: ''!
+
+!ElevatorController class methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 16:55:12'!
+desynchronizedCabinSensorErrorDescription
+
+	^ 'Sensor de cabina desincronizado'! !
 
 !ElevatorController class methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 18:37:26'!
 new 
@@ -928,13 +1032,18 @@ ElevatorState subclass: #Idle
 	poolDictionaries: ''
 	category: 'Elevator-Ejercicio'!
 
+!Idle methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 16:45:06'!
+closingDoorIfWorkingAndCabinStopped: aCabin
+
+	"do nothing"! !
+
 !Idle methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 19:39:55'!
 isIdle
 
 	^ true! !
 
-!Idle methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 19:49:49'!
-workTransition
+!Idle methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:06:03'!
+transitionToWorking
 
 	^ Working new! !
 
@@ -946,12 +1055,22 @@ ElevatorState subclass: #Working
 	poolDictionaries: ''
 	category: 'Elevator-Ejercicio'!
 
-!Working methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 20:57:23'!
-idleTransition
+!Working methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 16:44:44'!
+closingDoorIfWorkingAndCabinStopped: anElevatorController 
 
-	^ Idle new! !
+	anElevatorController closingCabinDoor ! !
 
 !Working methodsFor: 'as yet unclassified' stamp: 'MC 10/11/2017 19:40:12'!
 isWorking
 
 	^ true! !
+
+!Working methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:19:11'!
+transitionToIdle
+
+	^ Idle new! !
+
+!Working methodsFor: 'as yet unclassified' stamp: 'MC 10/12/2017 12:02:35'!
+transitionToWorking
+
+	^ self! !
