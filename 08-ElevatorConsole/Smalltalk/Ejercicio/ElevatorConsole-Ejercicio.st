@@ -580,10 +580,10 @@ CabinDoorState subclass: #CabinDoorClosedState
 	poolDictionaries: ''
 	category: 'ElevatorConsole-Ejercicio'!
 
-!CabinDoorClosedState methodsFor: 'visitor accepting' stamp: 'MC 10/17/2017 18:35:24'!
-accept: aNotifier
+!CabinDoorClosedState methodsFor: 'visitor accepting' stamp: 'MC 10/19/2017 15:39:45'!
+accept: aCabinDoorStateVisitor 
 
-	aNotifier notifyCabinDoorClosed: self! !
+	aCabinDoorStateVisitor visitCabinDoorClosed: self! !
 
 
 !CabinDoorClosedState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:46'!
@@ -599,10 +599,10 @@ CabinDoorState subclass: #CabinDoorClosingState
 	poolDictionaries: ''
 	category: 'ElevatorConsole-Ejercicio'!
 
-!CabinDoorClosingState methodsFor: 'visitor accepting' stamp: 'MC 10/17/2017 18:35:59'!
-accept: aNotifier
+!CabinDoorClosingState methodsFor: 'visitor accepting' stamp: 'MC 10/19/2017 15:48:47'!
+accept: aCabinDoorStateVisitor 
 
-	aNotifier notifyCabinDoorClosing: self! !
+	aCabinDoorStateVisitor visitCabinDoorClosing: self! !
 
 
 !CabinDoorClosingState methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 17:55'!
@@ -630,10 +630,10 @@ isOpened
 	^ true! !
 
 
-!CabinDoorOpenedState methodsFor: 'visitor accepting' stamp: 'MC 10/18/2017 00:19:07'!
-accept: aNotifier
+!CabinDoorOpenedState methodsFor: 'visitor accepting' stamp: 'MC 10/19/2017 15:49:19'!
+accept: aCabinDoorStateVisitor 
 
-	aNotifier notifyCabinDoorOpened: self! !
+	aCabinDoorStateVisitor visitCabinDoorOpened: self! !
 
 
 !classDefinition: #CabinDoorOpeningState category: #'ElevatorConsole-Ejercicio'!
@@ -649,10 +649,10 @@ cabinDoorClosedWhenWorkingAndCabinStopped
 	^elevatorController cabinDoorClosedWhenWorkingAndCabinStoppedAndCabinDoorOpening! !
 
 
-!CabinDoorOpeningState methodsFor: 'visitor accepting' stamp: 'MC 10/17/2017 18:38:56'!
-accept: aNotifier
+!CabinDoorOpeningState methodsFor: 'visitor accepting' stamp: 'MC 10/19/2017 15:49:33'!
+accept: aCabinDoorStateVisitor 
 
-	aNotifier notifyCabinDoorOpening: self! !
+	aCabinDoorStateVisitor visitCabinDoorOpening: self! !
 
 
 !CabinDoorOpeningState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:15'!
@@ -732,10 +732,10 @@ closeCabinDoorWhenWorking
 	^ elevatorController closeCabinDoorWhenWorkingAndCabinMoving! !
 
 
-!CabinMovingState methodsFor: 'visitor accepting' stamp: 'MC 10/17/2017 18:39:38'!
-accept: aNotifier
+!CabinMovingState methodsFor: 'visitor accepting' stamp: 'MC 10/19/2017 15:49:48'!
+accept: aCabinDoorStateVisitor 
 
-	aNotifier notifyCabinMoving: self! !
+	aCabinDoorStateVisitor visitCabinMoving: self! !
 
 
 !CabinMovingState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:47'!
@@ -774,10 +774,10 @@ cabinDoorOpenedWhenWorking
 	^elevatorController cabinDoorOpenedWhenWorkingAndCabinStopped! !
 
 
-!CabinStoppedState methodsFor: 'visitor accepting' stamp: 'MC 10/17/2017 18:40:50'!
-accept: aNotifier
+!CabinStoppedState methodsFor: 'visitor accepting' stamp: 'MC 10/19/2017 15:50:03'!
+accept: aCabinDoorStateVisitor 
 
-	aNotifier notifyCabinStopped: self! !
+	aCabinDoorStateVisitor visitCabinStopped: self! !
 
 
 !classDefinition: #CabinWaitingForPeopleState category: #'ElevatorConsole-Ejercicio'!
@@ -805,10 +805,10 @@ isWaitingForPeople
 	^true! !
 
 
-!CabinWaitingForPeopleState methodsFor: 'visitor accepting' stamp: 'HAW 10/4/2017 14:38:22'!
-accept: aVisitor
+!CabinWaitingForPeopleState methodsFor: 'visitor accepting' stamp: 'MC 10/19/2017 15:54:29'!
+accept: aCabinDoorStateVisitor 
 
-	aVisitor visitCabinWaitingForPeople: self! !
+	aCabinDoorStateVisitor visitCabinWaitingForPeople: self! !
 
 
 !classDefinition: #ElevatorController category: #'ElevatorConsole-Ejercicio'!
@@ -873,29 +873,29 @@ isCabinDoorOpening
 	
 	^ cabinDoorState isOpening ! !
 
-!ElevatorController methodsFor: 'cabin door state' stamp: 'MC 10/17/2017 23:44:07'!
+!ElevatorController methodsFor: 'cabin door state' stamp: 'MC 10/19/2017 15:51:32'!
 startClosingDoor
 	
 	cabinDoorState := CabinDoorClosingState of: self .
-	cabinDoorState accept: notifier .! !
+	notifier notifyState: cabinDoorState .! !
 
-!ElevatorController methodsFor: 'cabin door state' stamp: 'MC 10/17/2017 23:45:18'!
+!ElevatorController methodsFor: 'cabin door state' stamp: 'MC 10/19/2017 15:51:25'!
 startOpeningCabinDoor
 	
 	cabinDoorState := CabinDoorOpeningState of: self .
-	cabinDoorState accept: notifier .! !
+	notifier notifyState: cabinDoorState .! !
 
-!ElevatorController methodsFor: 'cabin door state' stamp: 'MC 10/17/2017 23:45:25'!
+!ElevatorController methodsFor: 'cabin door state' stamp: 'MC 10/19/2017 15:50:59'!
 stopCabinDoorMotorWhenClosed
 	
 	cabinDoorState := CabinDoorClosedState of: self .
-	cabinDoorState accept: notifier .! !
+	notifier notifyState: cabinDoorState .! !
 
-!ElevatorController methodsFor: 'cabin door state' stamp: 'MC 10/17/2017 23:45:32'!
+!ElevatorController methodsFor: 'cabin door state' stamp: 'MC 10/19/2017 15:51:17'!
 stopCabinDoorMotorWhenOpened
 	
 	cabinDoorState := CabinDoorOpenedState of: self .
-	cabinDoorState accept: notifier .! !
+	notifier notifyState: cabinDoorState .! !
 
 
 !ElevatorController methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:09'!
@@ -934,23 +934,23 @@ isCabinWaitingForPeople
 
 	^ cabinState isWaitingForPeople ! !
 
-!ElevatorController methodsFor: 'cabin state' stamp: 'MC 10/18/2017 00:17:56'!
+!ElevatorController methodsFor: 'cabin state' stamp: 'MC 10/19/2017 15:51:51'!
 startMovingCabin
 	
 	cabinState := CabinMovingState of: self .
-	cabinState accept: notifier .! !
+	notifier notifyState: cabinState .! !
 
-!ElevatorController methodsFor: 'cabin state' stamp: 'MC 10/17/2017 23:48:10'!
+!ElevatorController methodsFor: 'cabin state' stamp: 'MC 10/19/2017 15:51:59'!
 stopCabin
 	
 	cabinState := CabinStoppedState of: self .
-	cabinState accept: notifier .! !
+	notifier notifyState: cabinState .! !
 
-!ElevatorController methodsFor: 'cabin state' stamp: 'MC 10/18/2017 00:18:44'!
+!ElevatorController methodsFor: 'cabin state' stamp: 'MC 10/19/2017 15:57:17'!
 waitForPeopleToCameInsideCabin
 	
 	cabinState := CabinWaitingForPeopleState of: self .
-	cabinState accept: notifier .! !
+	notifier notifyState: cabinState .! !
 
 
 !ElevatorController methodsFor: 'button events by state' stamp: 'HernanWilkinson 7/15/2011 18:12'!
@@ -1387,40 +1387,10 @@ initialize
 	observers := OrderedCollection new! !
 
 
-!Notifier methodsFor: 'notify' stamp: 'MC 10/17/2017 18:47:47'!
-notifyCabinDoorClosed: aCabinDoorClosedState
+!Notifier methodsFor: 'notify' stamp: 'MC 10/19/2017 15:47:40'!
+notifyState: aState
 
-	observers do: [ :anObserver | anObserver visitCabinDoorClosed: aCabinDoorClosedState ]! !
-
-!Notifier methodsFor: 'notify' stamp: 'MC 10/17/2017 23:58:10'!
-notifyCabinDoorClosing: aCabinDoorClosingState
-
-	observers do: [ :anObserver | anObserver visitCabinDoorClosing: aCabinDoorClosingState ]! !
-
-!Notifier methodsFor: 'notify' stamp: 'MC 10/18/2017 00:20:58'!
-notifyCabinDoorOpened: aCabinDoorOpenedState
-
-	observers do: [ :anObserver | anObserver visitCabinDoorOpened: aCabinDoorOpenedState ]! !
-
-!Notifier methodsFor: 'notify' stamp: 'MC 10/17/2017 23:38:56'!
-notifyCabinDoorOpening: aCabinDoorOpeningState
-
-	observers do: [ :anObserver | anObserver visitCabinDoorOpening: aCabinDoorOpeningState ]! !
-
-!Notifier methodsFor: 'notify' stamp: 'MC 10/17/2017 23:40:11'!
-notifyCabinMoving: aCabinMovingState
-
-	observers do: [ :anObserver | anObserver visitCabinMoving: aCabinMovingState ]! !
-
-!Notifier methodsFor: 'notify' stamp: 'MC 10/17/2017 23:40:43'!
-notifyCabinStopped: aCabinStoppedState
-
-	observers do: [ :anObserver | anObserver visitCabinStopped: aCabinStoppedState ]! !
-
-!Notifier methodsFor: 'notify' stamp: 'MC 10/17/2017 23:41:34'!
-notifyCabinWaitingForPeople: aCabinWaitingForPeopleState
-
-	observers do: [ :anObserver | anObserver visitCabinWaitingForPeople: aCabinWaitingForPeopleState ]! !
+	observers do: [ :anObserver | aState accept: anObserver ]! !
 
 
 !Notifier methodsFor: 'register' stamp: 'MC 10/17/2017 17:43:56'!
