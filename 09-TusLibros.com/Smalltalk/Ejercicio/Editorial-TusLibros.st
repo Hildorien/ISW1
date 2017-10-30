@@ -1,6 +1,6 @@
 !classDefinition: #CartTest category: #'Editorial-TusLibros'!
 TestCase subclass: #CartTest
-	instanceVariableNames: 'aCart anISBN aCatalog anISBNNotIncludedInCatalog aCashier emptyCart anExpiredCreditCard'
+	instanceVariableNames: 'aCart anISBN aCatalog anISBNNotIncludedInCatalog aCashier emptyCart anExpiredCreditCard aCreditCard anotherISBN'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Editorial-TusLibros'!
@@ -68,41 +68,56 @@ test08CannotAddToCartMoreThanOneItemNotIncludedInCatalog
 			self assert: exception messageText = 'Cannot add an item not included in the catalog' .
 			self assert: aCart isEmpty . ]	! !
 
-!CartTest methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 16:11:19'!
+!CartTest methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 19:36:45'!
 test09CashierCannotCheckoutEmptyCart
 
 	self 
-		should: [ aCashier checkout: aCart ] 
+		should: [ aCashier checkout: aCart with: aCreditCard ] 
 		raise: Error 
 		withExceptionDo: [ :exception | 
 			self assert: exception messageText = 'Cannot checkout an empty cart' . ]! !
 
-!CartTest methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 16:42:04'!
+!CartTest methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 19:38:14'!
 test10CashierCannotCheckoutCartWithExpiredCreditCard
 
 	aCart add: anISBN .
 
 	self 
-		should: [ aCashier checkout: aCart from: anExpiredCreditCard ] 
+		should: [ aCashier checkout: aCart with: anExpiredCreditCard ] 
 		raise: Error 
 		withExceptionDo: [ :exception | 
 			self assert: exception messageText = 'Cannot checkout with an expired credit card' . ]! !
 
+!CartTest methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 22:05:46'!
+test11CashierCalculatesOrderCostAsTheSumOfTheCostOfItemsAddedToTheCart
 
-!CartTest methodsFor: 'setup' stamp: 'MC 10/29/2017 16:50:00'!
+	| orderCost unitsOfAnISBN unitsOfAnotherISBN |
+	unitsOfAnISBN := 3 .
+	unitsOfAnotherISBN := 2 .
+	aCart add: anISBN units: unitsOfAnISBN .
+	aCart add: anotherISBN units: unitsOfAnotherISBN .
+	orderCost := ( ( aCatalog at: anISBN ) * unitsOfAnISBN ) + ( ( aCatalog at: anotherISBN ) * unitsOfAnotherISBN ) .	
+
+	self assert: orderCost equals: ( aCashier checkout: aCart with: aCreditCard ) .! !
+
+
+!CartTest methodsFor: 'setup' stamp: 'MC 10/29/2017 21:58:22'!
 setUp
 
 	anISBN := '123456' .
+	anotherISBN := '123457' .
 	anISBNNotIncludedInCatalog := '001' .
 	
-	aCatalog := Set new .
-	aCatalog add: anISBN .
+	aCatalog := Dictionary new .
+	aCatalog at: anISBN put: 50.00 .
+	aCatalog at: anotherISBN put: 60.00 .
 
 	aCart := Cart with: aCatalog .
 	
+	aCreditCard := CreditCard with: ( Date year: 2019 month: 10 day: 1 ) .
 	anExpiredCreditCard := CreditCard with: ( Date year: 2017 month: 3 day: 1 ) .
 	
-	aCashier := Cashier new .
+	aCashier := Cashier with: aCatalog .
 
 
 	! !
@@ -129,6 +144,11 @@ add: anItem units: aQuantity
 	aQuantity <= 0 ifTrue: [ ^ self error: self class nonPositiveNumberOfItemsErrorDescription ] .
 	items add: anItem withOccurrences: aQuantity .! !
 
+!Cart methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 21:54:36'!
+do: aClosure
+
+	^ items do: aClosure ! !
+
 !Cart methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 13:39:17'!
 includes: anItem
 
@@ -144,10 +164,10 @@ unitsOf: anItem
 
 	^ items occurrencesOf: anItem! !
 
-!Cart methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 15:43:18'!
+!Cart methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 20:53:36'!
 validateItemInCatalog: anItem 
 
-	( catalog includes: anItem ) ifFalse: [ ^ self error: self class itemNotIncludedInCatalogErrorDescription ] .
+	( catalog includesKey: anItem ) ifFalse: [ ^ self error: self class itemNotIncludedInCatalogErrorDescription ] .
 ! !
 
 !Cart methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 15:44:34'!
@@ -180,17 +200,27 @@ with: aProductCatalog
 
 !classDefinition: #Cashier category: #'Editorial-TusLibros'!
 Object subclass: #Cashier
-	instanceVariableNames: ''
+	instanceVariableNames: 'catalog'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Editorial-TusLibros'!
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 16:34:24'!
+!Cashier methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 21:56:43'!
 checkout: aCart with: aCreditCard
 
+	| orderCost |
+	
 	aCart isEmpty ifTrue: [ ^ self error: self class emptyCartErrorDescription ] .
-	( Date today >= aCreditCard expirationDate ) ifTrue: [ ^ self error: self class expiredCreditCardErrorDescription ] .
+	( Date today < aCreditCard expirationDate ) ifFalse: [ ^ self error: self class expiredCreditCardErrorDescription ] .
+	orderCost := 0.00 .
+	aCart do: [ :anItem | orderCost := orderCost + catalog at: anItem ] .
+	^ orderCost
 ! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 21:57:59'!
+with: aCatalog
+
+	catalog := aCatalog ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -207,6 +237,11 @@ emptyCartErrorDescription
 expiredCreditCardErrorDescription
 
 	^ 'Cannot checkout with an expired credit card'! !
+
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'MC 10/29/2017 21:57:36'!
+with: aCatalog
+
+	^ self new with: aCatalog ! !
 
 
 !classDefinition: #CreditCard category: #'Editorial-TusLibros'!
